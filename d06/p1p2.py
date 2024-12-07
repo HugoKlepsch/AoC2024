@@ -11,12 +11,7 @@ GUARD_START = '^'
 VISITED = 'X'
 OBSTACLE = '#'
 
-
-@dataclasses.dataclass
-class GridSquare:
-    coord: typing.Tuple[int, int]
-    visited: bool
-    character: str
+GridSquare: type = str
 
 
 @dataclasses.dataclass
@@ -38,7 +33,7 @@ def p1():
     score = 0
     for y, line in enumerate(grid):
         for x, gridSquare in enumerate(line):
-            if gridSquare.visited:
+            if gridSquare == VISITED:
                 score += 1
 
     print(score)
@@ -53,7 +48,7 @@ def p2():
     grid = deepcopy(grid_start)
 
     guard_start = find_guard(grid)
-    guard = deepcopy(guard_start)
+    guard: Guard = deepcopy(guard_start)
 
     possible_loop_obstacles: typing.Set[typing.Tuple[int, int]] = set()
     guard_present = True
@@ -76,7 +71,7 @@ def p2():
         visited = set()
         grid = deepcopy(grid_start)
         guard = deepcopy(guard_start)
-        grid[obstacle[1]][obstacle[0]].character = OBSTACLE
+        grid[obstacle[1]][obstacle[0]] = OBSTACLE
         while True:
             guard_left, loop_detected = iterate(grid, guard, visited)
             if loop_detected:
@@ -92,7 +87,7 @@ def find_guard(grid: typing.List[typing.List[GridSquare]]) -> Guard:
     guard = None
     for y, line in enumerate(grid):
         for x, gridSquare in enumerate(line):
-            if gridSquare.character == GUARD_START:
+            if gridSquare == GUARD_START:
                 guard = Guard((x, y), UP)
     assert guard
     return guard
@@ -106,7 +101,6 @@ def iterate(
         guard: Guard,
         visited: typing.Set[typing.Tuple[typing.Tuple[int, int], typing.Tuple[int, int]]]=None
 ) -> typing.Tuple[bool, bool]:
-    cur_grid = grid[guard.coord[1]][guard.coord[0]]
     if visited is not None:
         coord_dir = (guard.coord, guard.direction)
         if coord_dir in visited:
@@ -117,13 +111,11 @@ def iterate(
 
     # if the next coordinate is out of bounds, the guard leaves
     if next_coord[0] < 0 or next_coord[0] >= len(grid[0]) or next_coord[1] < 0 or next_coord[1] >= len(grid):
-        cur_grid.visited = True
-        cur_grid.character = VISITED
-        guard_present = False
+        grid[guard.coord[1]][guard.coord[0]] = VISITED
         return True, False
 
     next_grid = grid[next_coord[1]][next_coord[0]]
-    if next_grid.character == OBSTACLE:
+    if next_grid == OBSTACLE:
         # guard turns 90 degrees
         if guard.direction == UP:
             guard.direction = RIGHT
@@ -135,10 +127,8 @@ def iterate(
             guard.direction = UP
     else:
         # guard can move
-        cur_grid.visited = True
-        cur_grid.character = VISITED
+        grid[guard.coord[1]][guard.coord[0]] = VISITED
         guard.coord = next_coord
-        next_grid.character = GUARD_START
     return False, False
 
 
@@ -146,7 +136,7 @@ def print_grid(grid: typing.List[typing.List[GridSquare]]):
     output = ''
     for y, line in enumerate(grid):
         for x, gridSquare in enumerate(line):
-            output += gridSquare.character
+            output += gridSquare
         output += '\n'
     print(output)
 
@@ -162,7 +152,7 @@ def read_parse():
             for x, char in enumerate(line):
                 if char == '\n':
                     continue
-                grid[y].append(GridSquare((x, y), False, char))
+                grid[y].append(char)
     return grid
 
 
