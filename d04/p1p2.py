@@ -1,6 +1,3 @@
-import re
-
-
 def p1():
     lines = read_parse()
 
