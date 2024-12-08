@@ -35,7 +35,7 @@ def p2(concat_func: int):
     def _concat1(a: int, b: int) -> int:
         return int(f'{a}{b}')
     def _concat2(a: int, b: int) -> int:
-        num_digits = math.ceil(math.log10(b))
+        num_digits = math.ceil(math.log10(b+1))
         a = a * 10 ** num_digits
         return a + b
     concat_funcs = [
@@ -60,9 +60,8 @@ def p2(concat_func: int):
 
 def can_solve_by_applying_operators(target: int, elements: List[int], operators: Set[Operator]) -> bool:
     # Try a combination of operators until one works
-    bs = [elements[x] for x in range(1, len(elements))]
+    bs = elements[1:]
     for operator_set in itertools.product(operators, repeat=len(elements)-1):
-        assert len(operator_set) == len(bs)
         accumulator = elements[0]
         for operator, b in zip(operator_set, bs):
             if accumulator > target:
@@ -87,6 +86,9 @@ def read_parse():
 
 
 if __name__ == '__main__':
+    import cProfile
+    cProfile.run('p2(0)')
+    cProfile.run('p2(1)')
     print(f'p1: {timeit.timeit(p1, number=3)}')
     print(f'p2_0: {timeit.timeit(lambda: p2(0), number=3)}')
     print(f'p2_1: {timeit.timeit(lambda: p2(1), number=3)}')
