@@ -2,7 +2,7 @@ import timeit
 import dataclasses
 import typing
 
-from structures.doubly_linked_list import DoublyLinkedList, Node
+from algorithms.doubly_linked_list import DoublyLinkedList, Node
 
 
 @dataclasses.dataclass
